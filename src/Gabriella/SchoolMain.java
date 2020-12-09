@@ -1,8 +1,12 @@
 package Gabriella;
+import Simon.DataAccess;
+import Simon.Student;
+
 import java.sql.*;
 import java.util.*;
 
 public class SchoolMain {
+    static DataAccess dataAccess;
     // JDBC driver name and database URL
     static final String JDBC_Driver = "com.mysql.cj.jdbc.Driver";
     static final String url = "jdbc:mysql://localhost:3306/school" +
@@ -25,24 +29,23 @@ public class SchoolMain {
             //************************add student data******************
              System.out.println("Student name:");
              Scanner in = new Scanner(System.in);
-             String sName = in.next();
+             String sName = in.nextLine();
 
              System.out.println("Student address:");
 
-             String sAddress = in.next();
+             String sAddress = in.nextLine();
 
              System.out.println("add data into sql db...");
 
              String sql4;
-             sql4 = "insert into students (name, address) values (?,?);";
+             sql4 = "insert into students (name, address) values ( ?,?);" ;
             PreparedStatement preparedStatement1 = con.prepareStatement(sql4);
 
-            preparedStatement1.setString(1, sName);
-            preparedStatement1.setString(2, sAddress);
+           preparedStatement1.setString(1, sName);
+
+           preparedStatement1.setString(2, sAddress);
 
             preparedStatement1.executeUpdate();
-
-
 
             //STEP 4: Execute a query
             System.out.println("Creating our statement...");
@@ -52,18 +55,33 @@ public class SchoolMain {
             ResultSet rs = statement.executeQuery(sql);
 
             //STEP 5: Extract data from result set
+
             while(rs.next()){
                 //Retrieve by column name
                 int id  = rs.getInt("id");  //add the field name from DB table
                 String name = rs.getString("name");
                 String address = rs.getString("address");
 
-
                 //Display values
                 System.out.print("ID: " + id);
                 System.out.print(", Name: " + name);
                 System.out.println(", Address: " + address);
             }
+
+            /*Scanner in2 = new Scanner(System.in);
+            System.out.println("Enter student id, to delete:");
+
+            Integer sId=0;
+            try {
+                    sId=Integer.parseInt(in2.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println(e.getMessage());
+                System.out.println("Wrong input, can only be numeric.");
+            }   
+            if (sId>0) */
+
+
+
             rs.close();
             statement.close();
             //***************************second table
@@ -145,6 +163,12 @@ public class SchoolMain {
 
     }
 
-
+    static public void init() {
+        try {
+            dataAccess = new DataAccess();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 }
